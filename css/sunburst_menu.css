@@ -1,0 +1,18 @@
+.nodelabel, .radial {
+	font-family: optima, sans-serif;
+	font-size:0.9em !important;
+	filter:none !important;
+}
+
+#radialmenu {
+	font-family: 'stint ultra condensed', tahoma,sans-serif;
+	fill: #fff !important;
+}
+
+.mouseover {
+	opacity:0.8;
+}
+
+.cursor {
+	fill:#999;
+}

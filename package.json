@@ -1,0 +1,27 @@
+{
+  "name": "d3-sunburst-menu",
+  "version": "1.0.0",
+  "description": "A d3js multilevel circular (pie) menu",
+  "main": "src/sunburst_menu.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lgrkvst/d3-sunburst-menu.git"
+  },
+  "keywords": [
+    "d3js",
+    "module",
+    "circular",
+    "pie",
+    "partition",
+    "menu"
+  ],
+  "author": "Christian Lagerkvist <git@o-o.se>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lgrkvst/d3-sunburst-menu/issues"
+  },
+  "homepage": "https://github.com/lgrkvst/d3-sunburst-menu#readme"
+}
