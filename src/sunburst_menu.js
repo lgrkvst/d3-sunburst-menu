@@ -289,12 +289,15 @@ module.exports = (function sunburst_menu(tree, n, container) {
 
 
         function tweenDonut(b) {
+            // impact will make a node 'chisel' into the menu
+            // currently unused, but setting impact proportional to the ping of REST providers is a given...
+            // (reckon impact=3 is a max)
             var impact = 0;
             if (b.impact) {
                 impact = b.impact;
                 delete(b.impact);
             }
-            var inout = (p.depth == 1) ? 1 : -0.4;
+            var inout = (b.depth == 1) ? 1 : -0.4;
             var i = d3.interpolate({ depth: b.depth + inout + impact, x: b.x - 0.3 * inout }, b);
             return function(t) {
                 return arc(i(t));
