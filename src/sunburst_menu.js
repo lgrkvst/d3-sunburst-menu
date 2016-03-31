@@ -11,11 +11,11 @@
  *		Move svg attributes to css
  * 		Add tests
  *		Refactoring?
- * 
+ *
  * Time to spare? Try generating a sunburst menu in grayscale - really neat
  */
 
-/** 
+/**
 	sunburst_menu(tree, n, container)
 
 	tree is fed into the d3.partition object - every leaf in the tree must have a callback function, invoked upon selection
@@ -24,16 +24,15 @@
  */
 
 module.exports = (function sunburst_menu(tree, n, container) {
-    tree.name = "ROOT";
     var _radius = 140;
     var radius = 140;
     var _rotate = Math.PI / 2;
     var rotate = _rotate;
     var hue = d3.scale.category20();
     var backSize = 0.1; // back button size as percent of full circle
-    var currentNode = tree;
-    var backEnabled = 1;
+    var currentNode = tree; // start traversal at root level
     var menuWaiter;
+    var idleTime = 300; // time (ms) between edge nudge and traversal
 
     // currying arcradius for maintaining nice ratio between inner and outer menu edge
     var arcradius = function(inner_outer) {
@@ -50,7 +49,8 @@ module.exports = (function sunburst_menu(tree, n, container) {
             return rotate + d.x + d.dx })
         .innerRadius(arcradius(0))
         .outerRadius(arcradius(1))
-        .padAngle(0.01);
+        .padAngle(0.01)
+        .cornerRadius(4);
 
     // back peddle generator
     var backArc = d3.svg.arc()
@@ -58,8 +58,10 @@ module.exports = (function sunburst_menu(tree, n, container) {
         .endAngle(arc.endAngle())
         .innerRadius(arcradius(-0.2))
         .outerRadius(arcradius(1))
-        .padAngle(0.04);
+        .padAngle(0.04)
+        .cornerRadius(4);
 
+    // if a node doesn't specify fill, it along with its siblings will form gradients of closest ancestor fill color
     function fill(d) {
         if (d.fill) return d3.hsl(d.fill);
         var p = d;
@@ -71,13 +73,10 @@ module.exports = (function sunburst_menu(tree, n, container) {
             }
             p = p.parent;
         }
-        if (p.fill) {
-
-        }
         var c = p.fill ? fill(p) : d3.hsl(hue(label(p)));
         c.l = luminance(i);
         c.s = saturation(d.depth);
-        //		c.s = 0.0; // b/w
+ //       c.s = 0.0; // b/w children
         d.fill = c;
         return c;
     }
@@ -113,7 +112,7 @@ module.exports = (function sunburst_menu(tree, n, container) {
 
     // we're only using n(ode) to set initial menu position
 	var radialmenu = container.append("g").attr("id", "radialmenu").attr("transform", "translate(" + n.x + "," + n.y + ")");
-    traverse(tree, tree);
+
     // attach mousemove listener to container
     container.on("mousemove", function() {
         var currentArc, offset = -10; // activate move slighly before reaching menu edge
@@ -129,7 +128,7 @@ module.exports = (function sunburst_menu(tree, n, container) {
             //clickLocation = localToPolar(d3.mouse(this));
             if (currentArc = d3.select(".mouseover")[0][0]) {
                 var m_local = d3.mouse(radialmenu[0][0]);
-                menuWaiter = setTimeout(zoom, 300, currentArc.__data__, localToPolar(m_local));
+                menuWaiter = setTimeout(zoom, idleTime, currentArc.__data__, localToPolar(m_local));
             }
         }
     });
