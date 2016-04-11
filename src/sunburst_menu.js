@@ -28,11 +28,13 @@ module.exports = (function sunburst_menu(tree, n, container) {
     var radius = 140;
     var _rotate = Math.PI / 2;
     var rotate = _rotate;
-    var hue = d3.scale.category20();
+    var hue = d3.scale.category20(); // if node parents don't specify a fill attribute (i.e. a color)
     var backSize = 0.1; // back button size as percent of full circle
     var currentNode = tree; // start traversal at root level
     var menuWaiter;
     var idleTime = 300; // time (ms) between edge nudge and traversal
+    var padAngle = 0.01;
+    var dropshadow = false;
 
     // currying arcradius for maintaining nice ratio between inner and outer menu edge
     var arcradius = function(inner_outer) {
@@ -49,7 +51,7 @@ module.exports = (function sunburst_menu(tree, n, container) {
             return rotate + d.x + d.dx })
         .innerRadius(arcradius(0))
         .outerRadius(arcradius(1))
-        .padAngle(0.01)
+        .padAngle(padAngle)
         .cornerRadius(4);
 
     // back peddle generator
@@ -58,7 +60,7 @@ module.exports = (function sunburst_menu(tree, n, container) {
         .endAngle(arc.endAngle())
         .innerRadius(arcradius(-0.2))
         .outerRadius(arcradius(1))
-        .padAngle(0.04)
+        .padAngle(4*padAngle)
         .cornerRadius(4);
 
     // if a node doesn't specify fill, it along with its siblings will form gradients of closest ancestor fill color
@@ -100,10 +102,11 @@ module.exports = (function sunburst_menu(tree, n, container) {
 
     partition
         .value(function(d) {
-            return 1 / (d.parent.children.length * d.depth); /* d.size ? Math.sqrt(d.size):1; */ })
+            // downplay size difference so that first level menu angles are somewhat equal
+            return 1 / (d.parent.children.length * d.depth); })
         .nodes(tree)
         .forEach(function(d) {
-            // stash children in case we want to limit the menu
+            // stash children in case we want to limit initial visibility of deep menu items
             d._children = d.children;
         })
 
@@ -112,6 +115,41 @@ module.exports = (function sunburst_menu(tree, n, container) {
 
     // we're only using n(ode) to set initial menu position
 	var radialmenu = container.append("g").attr("id", "radialmenu").attr("transform", "translate(" + n.x + "," + n.y + ")");
+
+    // add optional dropshadow
+    if (dropshadow) {
+        radialmenu.attr("filter", "url(#dropshadow)");
+    }
+
+    // define a dropshadow:
+    //  <filter id="f1" x="0" y="0" width="200%" height="200%">
+    //      <feOffset result="offOut" in="SourceGraphic" dx="20" dy="20" />
+    //      <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
+    //      <feBlend in="SourceGraphic" in2="offOut" mode="normal" />
+    // </filter>
+
+    var filter = container.append("defs").append("filter")
+        .attr("id", "dropshadow")
+        .attr("x", "0")
+        .attr("y", "0")
+        .attr("width", "200%")
+        .attr("height", "200%");
+
+    filter.append("feOffset")
+        .attr("result", "offOut")
+        .attr("in", "SourceAlpha")
+        .attr("dx", "0")
+        .attr("dy", "0");
+
+    filter.append("feGaussianBlur")
+        .attr("result", "blurOut")
+        .attr("in", "offOut")
+        .attr("stdDeviation", "8");
+
+    filter.append("feBlend")
+        .attr("in", "SourceGraphic")
+        .attr("in2", "blurOut")
+        .attr("mode", "normal");
 
     // attach mousemove listener to container
     container.on("mousemove", function() {
@@ -184,9 +222,9 @@ module.exports = (function sunburst_menu(tree, n, container) {
             partition.size([2 * Math.PI, radius]);
             rotate = _rotate;
         }
-
+        console.log(((tree)));
         group = d3.select("#radialmenu").selectAll("g.menuitem").data(partition.nodes(tree), function(d) {
-            return d.id; });
+            return Math.random(); });
         cursor = d3.select("#radialmenu").selectAll("g.cursor").data(cursorData, function(n) {
             return n.id; });
 
@@ -452,7 +490,6 @@ module.exports = (function sunburst_menu(tree, n, container) {
 
 
     return {
-        redraw: function() { traverse(currentNode, currentNode); },
-        radius: function(n) { radius = n; }
+        draw: function() { traverse(currentNode, currentNode); }
     };
 });
