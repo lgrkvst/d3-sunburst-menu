@@ -94,8 +94,6 @@ module.exports = (function sunburst_menu(tree, n, container) {
         .range([0.5, 0.15]);
 
     var partition = d3.layout.partition()
-        .sort(function(a, b) {
-            return d3.ascending(a.name, b.name); })
         .size([2 * Math.PI, radius])
         .value(function(d) {
             return d.depth; });
@@ -171,6 +169,9 @@ module.exports = (function sunburst_menu(tree, n, container) {
         }
     });
 
+
+    traverse(tree);
+
     function localToPolar(m) {
         var rad = Math.sqrt(m[0] * m[0] + m[1] * m[1]);
         var deg = Math.atan2(m[1], m[0]);
@@ -185,7 +186,7 @@ module.exports = (function sunburst_menu(tree, n, container) {
         if (currentArc == null) return;
         if (currentArc && (currentArc.__data__ != p)) return; // mouse moved out
         if (label(p) == "BACK") {
-            traverse(currentNode.parent, currentNode, clickLocation);
+            traverse(currentNode.parent, clickLocation);
             return;
         }
 
@@ -197,13 +198,13 @@ module.exports = (function sunburst_menu(tree, n, container) {
         }
 
         if (p.depth) { // zooming in
-            traverse(p, p, clickLocation);
+            traverse(p, clickLocation);
         } else { // zooming out
-            traverse(p.parent, p, clickLocation);
+            traverse(p.parent, clickLocation);
         }
     }
 
-    function traverse(tree, p, clickLocation) {
+    function traverse(tree, clickLocation) {
         radius = Math.pow(tree.children.length, 1 / 3) * _radius / 1.6;
         if (radius < _radius) radius = _radius;
         currentNode = tree;
@@ -222,9 +223,8 @@ module.exports = (function sunburst_menu(tree, n, container) {
             partition.size([2 * Math.PI, radius]);
             rotate = _rotate;
         }
-        console.log(((tree)));
-        group = d3.select("#radialmenu").selectAll("g.menuitem").data(partition.nodes(tree), function(d) {
-            return Math.random(); });
+        group = d3.select("#radialmenu").selectAll("g.menuitem").data(partition.nodes(tree), function(n) {
+            return n.id; });
         cursor = d3.select("#radialmenu").selectAll("g.cursor").data(cursorData, function(n) {
             return n.id; });
 
@@ -490,6 +490,8 @@ module.exports = (function sunburst_menu(tree, n, container) {
 
 
     return {
-        draw: function() { traverse(currentNode, currentNode); }
+        redraw: function() { traverse(currentNode); },
+        remove: function() { radialmenu.remove(); },
+        tree: function() { return tree; }
     };
 });
