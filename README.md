@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/lgrkvst/d3-sunburst-menu/master/img/example.jpg" width="400">
+<img src="https://raw.githubusercontent.com/lgrkvst/d3-sunburst-menu/master/img/observatory.jpg" width="400">
 
 # D3 Sunburst Menu
 A d3js multilevel circular (pie) menu, quite undocumented at the moment
@@ -29,12 +29,11 @@ where:
 * _node_ is any object with x and y properties (for instance a d3 force directed node instance)
 * _svg_container_ is the d3 selection that will host the menu (as obtained by `d3.select`).
 
-Draw by:
-`treecontroller.draw()`
+Redraw by:
+`treecontroller.redraw();`
 
-There's no remove method yet, so remove by:
-
-`svg.selectAll("g#radialmenu").remove()`
+Remove by:
+`treecontroller.remove();`
 
 ##Settings
 The first few lines of d3-sunburst-menu.js offers a number of settings:
@@ -43,7 +42,7 @@ The first few lines of d3-sunburst-menu.js offers a number of settings:
     var _rotate = Math.PI / 2; // default menu rotation (if you need to align menu items)
     var backSize = 0.1; // back button size as percent of full circle
     var idleTime = 300; // time (ms) between edge nudge and menu traversal
-    var dropshadow = false; // add a nice dropshadow – impacts menu performance somewhat...
+    var dropshadow = false; // add a nice dropshadow – impacts menu performance, but can be optimized
 
 
 
