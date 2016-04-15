@@ -3,27 +3,28 @@
  * Visualise a tree structure as a traversable, circular partition menu
  * Traverse and select nodes by nudging the edge
  * sunburst_menu returns an object with a redraw function, so that the partition can be altered (in my case waiting for several REST services to return menu data) and then updated through a call to redraw()
+ * IMPORTANT: the menu tree's children have to be called _children. Partly to enable redrawing the tree with additional nodes, and partly because I'm a lousy developer.
  *
  * @author Christian Lagerkvist [@lgrkvst, git@o-o.se]
  * todo:
- *		Documentation
- *		Fix leaf text styles
- *		Move svg attributes to css
- * 		Add tests
- *		Refactoring?
+ *      Documentation
+ *      Fix leaf text styles
+ *      Move svg attributes to css
+ *      Add tests
+ *      Refactoring?
  *
  * Time to spare? Try generating a sunburst menu in grayscale - really neat
  */
 
 /**
-	sunburst_menu(tree, n, container)
+    sunburst_menu(tree, n, container)
 
-	tree is fed into the d3.partition object - every leaf in the tree must have a callback function, invoked upon selection
-	n is the object invoking the menu – just make sure it has x any y attributes
-	container is a d3 svg node that should host the menu
+    tree is fed into the d3.partition object - every leaf in the tree must have a callback function, invoked upon selection
+    n is the object invoking the menu – just make sure it has x any y attributes
+    container is a d3 svg node that should host the menu
  */
 
-module.exports = (function sunburst_menu(tree, n, container) {
+module.exports = (function d3_sunburst_menu(tree, n, container) {
     var _radius = 140;
     var radius = 140;
     var _rotate = Math.PI / 2;
@@ -34,7 +35,8 @@ module.exports = (function sunburst_menu(tree, n, container) {
     var menuWaiter;
     var idleTime = 300; // time (ms) between edge nudge and traversal
     var padAngle = 0.01;
-    var dropshadow = false;
+    var dropshadow = true;
+    var cornerRadius = 0; // 4 is neat but causes transition flickering if root has exactly two children
 
     // currying arcradius for maintaining nice ratio between inner and outer menu edge
     var arcradius = function(inner_outer) {
@@ -46,13 +48,15 @@ module.exports = (function sunburst_menu(tree, n, container) {
     // default generator
     var arc = d3.svg.arc()
         .startAngle(function(d) {
-            return rotate + d.x; })
+            return rotate + d.x;
+        })
         .endAngle(function(d) {
-            return rotate + d.x + d.dx })
+            return rotate + d.x + d.dx
+        })
         .innerRadius(arcradius(0))
         .outerRadius(arcradius(1))
         .padAngle(padAngle)
-        .cornerRadius(4);
+        .cornerRadius(cornerRadius);
 
     // back peddle generator
     var backArc = d3.svg.arc()
@@ -60,8 +64,8 @@ module.exports = (function sunburst_menu(tree, n, container) {
         .endAngle(arc.endAngle())
         .innerRadius(arcradius(-0.2))
         .outerRadius(arcradius(1))
-        .padAngle(4*padAngle)
-        .cornerRadius(4);
+        .padAngle(4 * padAngle)
+        .cornerRadius(cornerRadius);
 
     // if a node doesn't specify fill, it along with its siblings will form gradients of closest ancestor fill color
     function fill(d) {
@@ -78,7 +82,7 @@ module.exports = (function sunburst_menu(tree, n, container) {
         var c = p.fill ? fill(p) : d3.hsl(hue(label(p)));
         c.l = luminance(i);
         c.s = saturation(d.depth);
- //       c.s = 0.0; // b/w children
+        //       c.s = 0.0; // b/w children
         d.fill = c;
         return c;
     }
@@ -96,36 +100,24 @@ module.exports = (function sunburst_menu(tree, n, container) {
     var partition = d3.layout.partition()
         .size([2 * Math.PI, radius])
         .value(function(d) {
-            return d.depth; });
+            return d.depth;
+        });
 
+    partition.children(function(d) {
+        return (d.depth) < 2 ? d._children : null;
+    })
     partition
         .value(function(d) {
             // downplay size difference so that first level menu angles are somewhat equal
-            return 1 / (d.parent.children.length * d.depth); })
-        .nodes(tree)
-        .forEach(function(d) {
-            // stash children in case we want to limit initial visibility of deep menu items
-            d._children = d.children;
+            return 1 / (d.parent.children.length * d.depth);
         })
+        .nodes(tree);
 
-    partition.children(function(d, depth) {
-        return d.depth < 2 ? d._children : null; })
 
     // we're only using n(ode) to set initial menu position
-	var radialmenu = container.append("g").attr("id", "radialmenu").attr("transform", "translate(" + n.x + "," + n.y + ")");
+    var radialmenu = container.append("g").attr("id", "radialmenu").attr("transform", "translate(" + n.x + "," + n.y + ")");
 
-    // add optional dropshadow
-    if (dropshadow) {
-        radialmenu.attr("filter", "url(#dropshadow)");
-    }
-
-    // define a dropshadow:
-    //  <filter id="f1" x="0" y="0" width="200%" height="200%">
-    //      <feOffset result="offOut" in="SourceGraphic" dx="20" dy="20" />
-    //      <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
-    //      <feBlend in="SourceGraphic" in2="offOut" mode="normal" />
-    // </filter>
-
+    // define a dropshadow
     var filter = container.append("defs").append("filter")
         .attr("id", "dropshadow")
         .attr("x", "0")
@@ -149,6 +141,11 @@ module.exports = (function sunburst_menu(tree, n, container) {
         .attr("in2", "blurOut")
         .attr("mode", "normal");
 
+    // add optional dropshadow
+    if (dropshadow) {
+        radialmenu.attr("filter", "url(#dropshadow)");
+    }
+
     // attach mousemove listener to container
     container.on("mousemove", function() {
         var currentArc, offset = -10; // activate move slighly before reaching menu edge
@@ -156,7 +153,8 @@ module.exports = (function sunburst_menu(tree, n, container) {
         var m = d3.mouse(this);
         // get menu position – todo: compile the regexp for performance...
         var s = radialmenu.attr("transform").match(/translate\(([\d\.]+),([\d\.]+)/).filter(function(a, b) {
-            return b ? a : false; });
+            return b ? a : false;
+        });
         if (((m[0] - s[0]) * (m[0] - s[0]) + (m[1] - s[1]) * (m[1] - s[1])) > r * r) {
             var A = Math.atan2((m[1] - s[1]), (m[0] - s[0]));
             radialmenu.attr("transform", "translate(" + Math.round(1 * m[0] - Math.cos(A) * r) + "," + Math.round(1 * m[1] - Math.sin(A) * r) + ")")
@@ -192,9 +190,7 @@ module.exports = (function sunburst_menu(tree, n, container) {
 
         if (p.callback) {
             p.callback(n);
-
             return;
-            // exit menu
         }
 
         if (p.depth) { // zooming in
@@ -205,8 +201,10 @@ module.exports = (function sunburst_menu(tree, n, container) {
     }
 
     function traverse(tree, clickLocation) {
-        radius = Math.pow(tree.children.length, 1 / 3) * _radius / 1.6;
-        if (radius < _radius) radius = _radius;
+        radius = Math.pow(tree._children.length, 1 / 3) * _radius / 1.6;
+        if (radius < _radius) {
+            radius = _radius;
+        }
         currentNode = tree;
         var cursorData = [];
         if (tree.parent) {
@@ -223,10 +221,12 @@ module.exports = (function sunburst_menu(tree, n, container) {
             partition.size([2 * Math.PI, radius]);
             rotate = _rotate;
         }
-        group = d3.select("#radialmenu").selectAll("g.menuitem").data(partition.nodes(tree), function(n) {
-            return n.id; });
+        group = d3.select("#radialmenu").selectAll("g.menuitem").data(partition(tree), function(n) {
+            return n.id;
+        });
         cursor = d3.select("#radialmenu").selectAll("g.cursor").data(cursorData, function(n) {
-            return n.id; });
+            return n.id;
+        });
 
         cursor.exit().remove();
 
@@ -235,7 +235,8 @@ module.exports = (function sunburst_menu(tree, n, container) {
             .attr("class", "cursor")
             .append("path")
             .attr("id", function(d) {
-                return "path_" + safelabel(d); })
+                return "path_" + safelabel(d);
+            })
             .each(addText)
             .each(addGradient)
             .each(addClipPath);
@@ -246,7 +247,9 @@ module.exports = (function sunburst_menu(tree, n, container) {
             .append("path")
             .attr("class", "menuitem")
             .attr("id", function(d) {
-                return "path_" + safelabel(d); })
+                //                d._children = d.children;
+                return "path_" + safelabel(d);
+            })
             .each(addGradient)
             .each(addText)
             .each(addClipPath);
@@ -258,7 +261,7 @@ module.exports = (function sunburst_menu(tree, n, container) {
 
         group.transition()
             .duration(600)
-            //				.delay(function (n,i) {return i*3})
+            //              .delay(function (n,i) {return i*3})
             .ease("elastic")
             .each(function() {
                 d3.selectAll("g.radial")
@@ -277,9 +280,11 @@ module.exports = (function sunburst_menu(tree, n, container) {
                     })
                 d3.selectAll("text.curved")
                     .filter(function(d) {
-                        return d.depth; })
+                        return d.depth;
+                    })
                     .attr("font-size", function(d) {
-                        return arc.outerRadius()(d) - arc.innerRadius()(d); })
+                        return arc.outerRadius()(d) - arc.innerRadius()(d);
+                    })
                     .attr("dy", function(d) {
                         return (arc.outerRadius()(d) - arc.innerRadius()(d)) * .85;
                     })
@@ -289,16 +294,18 @@ module.exports = (function sunburst_menu(tree, n, container) {
                     .styleTween("fill-opacity", function(n) {
                         var f = d3.interpolate(0, 1);
                         return function(i) {
-                            return f(i); }
+                            return f(i);
+                        }
                     });
                 d3.selectAll("path.labelpath")
                     .filter(function(d) {
-                        return d.depth; })
+                        return d.depth;
+                    })
                     .attr("d", function(n) {
                         return "M " + (arc.outerRadius()(n) * Math.sin(n.x + n.dx / 2 + rotate - Math.PI / 2)) + " " + (-arc.outerRadius()(n) * Math.cos(n.x + n.dx / 2 + rotate - Math.PI / 2)) + " \
-							A " + arc.outerRadius()(n) + " " + arc.outerRadius()(n) + ", \
-							0, 0, 1, \
-							" + (arc.outerRadius()(n) * Math.sin(n.x + n.dx / 2 + rotate + Math.PI / 2)) + " " + (-arc.outerRadius()(n) * Math.cos(n.x + n.dx / 2 + rotate + Math.PI / 2));
+                            A " + arc.outerRadius()(n) + " " + arc.outerRadius()(n) + ", \
+                            0, 0, 1, \
+                            " + (arc.outerRadius()(n) * Math.sin(n.x + n.dx / 2 + rotate + Math.PI / 2)) + " " + (-arc.outerRadius()(n) * Math.cos(n.x + n.dx / 2 + rotate + Math.PI / 2));
                     })
             })
             .selectAll("path.menuitem")
@@ -361,17 +368,17 @@ module.exports = (function sunburst_menu(tree, n, container) {
     /******************* ICONS *******************/
     /*
     g.filter(function (n,i){if (n.hasOwnProperty("icon")) {return true;}})
-    	.append("use").attr("xlink:href", function (n) {
-    		return n.icon;
-    	})
-    	.attr("transform", function(d) {
-    		var rotate = "rotate(" + (((d.x + d.dx / 2 - Math.PI / 2) / Math.PI * 180)+90) + ")"
-    		var x = -this.getBBox().width/2;
-    		var y = -radius/3*(d.depth+epicentre+1);
-    		var translate = "translate(" + x + "," + y + ")"
+        .append("use").attr("xlink:href", function (n) {
+            return n.icon;
+        })
+        .attr("transform", function(d) {
+            var rotate = "rotate(" + (((d.x + d.dx / 2 - Math.PI / 2) / Math.PI * 180)+90) + ")"
+            var x = -this.getBBox().width/2;
+            var y = -radius/3*(d.depth+epicentre+1);
+            var translate = "translate(" + x + "," + y + ")"
 
-    	return rotate + " " + translate;
-    		});
+        return rotate + " " + translate;
+            });
 
     var text = radial(g);
     */
@@ -401,7 +408,7 @@ module.exports = (function sunburst_menu(tree, n, container) {
             if (g._children || !should_radiate(g)) {
                 addCurvedText.call(this);
             } else {
-                //	addCurvedText.call(this);
+                //  addCurvedText.call(this);
                 addRadialText.call(this);
             }
         } catch (err) {
@@ -490,8 +497,12 @@ module.exports = (function sunburst_menu(tree, n, container) {
 
 
     return {
-        redraw: function() { traverse(currentNode); },
+        redraw: function() {
+            traverse(currentNode);
+        },
         remove: function() { radialmenu.remove(); },
-        tree: function() { return tree; }
+        tree: function() {
+            return tree;
+        }
     };
 });
