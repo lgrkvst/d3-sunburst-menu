@@ -25,8 +25,8 @@ Initialize by:
 
 where:
 
-* _tree_ is a d3 partition tree,
-* _node_ is any object with x and y properties (for instance a d3 force directed node instance)
+* _tree_ is a d3 partition tree with a _BIG NOTE: children arrays must be named_ _children. _This in order to allow for a menu instance to be redrawn with new nodes_
+* _node_ is any object with x and y properties (for instance a d3 force directed node instance). d3-sunburst-menu only uses the x and y attributes to position the menu inside the...
 * _svg_container_ is the d3 selection that will host the menu (as obtained by `d3.select`).
 
 Redraw by:
