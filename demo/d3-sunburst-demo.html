@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Simple d3-sunburst-menu demo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js" type="text/javascript" charset="utf-8"></script>
+    <link href='https://fonts.googleapis.com/css?family=Stint+Ultra+Condensed' rel='stylesheet' type='text/css'>
+    <style>
+    #radialmenu {
+        font-family: 'stint ultra condensed', tahoma, sans-serif;
+        fill: #fff !important;
+    }
+
+    body {
+        background-color: #000000;
+        background-image: url('http://hybridtechcar.com/wp-content/uploads/2013/12/national-geographic-14.jpg');
+        background-position: top center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+
+    .mouseover {
+        opacity: 0.5;
+    }
+
+    body > svg > text {
+        font-size: 60px;
+        fill: #fff;
+        font-family: 'stint ultra condensed', tahoma, sans-serif;
+    }
+    </style>
+</head>
+
+<body>
+    <div>
+    <a href="https://github.com/lgrkvst/d3-sunburst-menu"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+        <script type="text/javascript" charset="utf-8">
+        var w = window.innerWidth,
+            h = window.innerHeight;
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", w)
+            .attr("height", h);
+
+        svg.append("text").attr("x", "20").attr("y", "40").text("nudge menu edge to traverse/select...");
+
+        var module = {};
+        </script>
+        <script src="https://rawgit.com/lgrkvst/d3-sunburst-menu/master/src/d3-sunburst-menu.js" type="text/javascript" charset="utf-8"></script>
+        <script>
+        function default_callback() {
+            alert(this.id);
+        }
+
+        var tree = {
+            _children: [{
+                id: "ajax call",
+                fill: "#d90"
+            }, {
+                id: "whatever",
+                fill: "#8a0",
+                name: "a label",
+                _children: [{
+                    id: "item 1",
+                    callback: default_callback
+                }, {
+                    id: "item 2",
+                    callback: default_callback
+                }, {
+                    id: "item 3",
+                    callback: default_callback
+                }]
+            }, {
+                id: "three",
+                fill: "#39d",
+                name: "menu item",
+                _children: [{
+                    id: "deep",
+                    _children: [{
+                        id: "deeper",
+                        _children: [{
+                            id: "quite deep",
+                            callback: default_callback
+                        }, {
+                            id: "rather deep",
+                            callback: default_callback
+                        }]
+                    }, {
+                        id: "shallow sibling",
+                        callback: default_callback
+                    }]
+                }, {
+                    id: "item b",
+                    callback: default_callback
+                }, {
+                    id: "item c",
+                    callback: default_callback
+                }]
+            }, ]
+        };
+
+
+        var d3_sunburst_menu = module.exports(tree, {
+            x: w / 2,
+            y: h / 2
+        }, svg);
+
+        setTimeout(simulated_restreturn, 2000);
+
+        function simulated_restreturn() {
+            tree._children[2]._children = [];
+            tree._children[2]._children.push({
+                id: "a",
+                name: "rest result 1"
+            });
+            tree._children[2]._children.push({
+                id: "b",
+                name: "rest result 2",
+                _children: [{
+                    id: "only child",
+                    callback: default_callback
+                }]
+            });
+            tree._children[2]._children.push({
+                id: "c",
+                name: "rest result 3",
+                _children: [{
+                    id: "sibling 1",
+                    callback: default_callback
+                }, {
+                    id: "sibling 2",
+                    callback: default_callback
+                }]
+            });
+            d3_sunburst_menu.redraw();
+        }
+        </script>
+    </div>
+</body>
+</html>

@@ -3,7 +3,7 @@
  * Visualise a tree structure as a traversable, circular partition menu
  * Traverse and select nodes by nudging the edge
  * sunburst_menu returns an object with a redraw function, so that the partition can be altered (in my case waiting for several REST services to return menu data) and then updated through a call to redraw()
- * IMPORTANT: the menu tree's children have to be called _children. Partly to enable redrawing the tree with additional nodes, and partly because I'm a lousy developer.
+ * IMPORTANT: the menu tree's children have to be called _children. Partly to enable redrawing the tree with additional nodes, and partly because I suck.
  *
  * @author Christian Lagerkvist [@lgrkvst, git@o-o.se]
  * todo:
@@ -35,7 +35,7 @@ module.exports = (function d3_sunburst_menu(tree, n, container) {
     var menuWaiter;
     var idleTime = 300; // time (ms) between edge nudge and traversal
     var padAngle = 0.01;
-    var dropshadow = true;
+    var dropshadow = false;
     var cornerRadius = 0; // 4 is neat but causes transition flickering if root has exactly two children
 
     // currying arcradius for maintaining nice ratio between inner and outer menu edge
