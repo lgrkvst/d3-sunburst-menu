@@ -1,7 +1,7 @@
 <img src="https://raw.githubusercontent.com/lgrkvst/d3-sunburst-menu/master/img/observatory.jpg" width="400">
 
 # D3 Sunburst Menu
-A d3js multilevel circular (pie) menu, quite undocumented at the moment
+A d3js multilevel circular (pie) menu, quite undocumented at the moment. Here's a [demo](https://rawgit.com/lgrkvst/d3-sunburst-menu/master/demo/d3-sunburst-demo.html)
 
 ## Description
 
