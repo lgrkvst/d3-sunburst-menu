@@ -4,7 +4,8 @@
   "description": "A d3js multilevel circular (pie) menu",
   "main": "src/sunburst_menu.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preversion": "webpack --entry ./src/d3-sunburst-menu.js --output-file dist/d3-sunburst-menu.min.js --optimize-minimize"
   },
   "repository": {
     "type": "git",

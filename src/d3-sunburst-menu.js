@@ -36,7 +36,7 @@ module.exports = (function d3_sunburst_menu(tree, n, container) {
     var idleTime = 300; // time (ms) between edge nudge and traversal
     var padAngle = 0.01;
     var dropshadow = false;
-    var cornerRadius = 0; // 4 is neat but causes transition flickering if root has exactly two children
+    var cornerRadius = 4; // 4 is neat but causes transition flickering if root has exactly two children
 
     // currying arcradius for maintaining nice ratio between inner and outer menu edge
     var arcradius = function(inner_outer) {
@@ -202,6 +202,7 @@ module.exports = (function d3_sunburst_menu(tree, n, container) {
 
     function traverse(tree, clickLocation) {
         radius = Math.pow(tree._children.length, 1 / 3) * _radius / 1.6;
+        if (radius > 190) radius = 190;
         if (radius < _radius) {
             radius = _radius;
         }
@@ -408,7 +409,6 @@ module.exports = (function d3_sunburst_menu(tree, n, container) {
             if (g._children || !should_radiate(g)) {
                 addCurvedText.call(this);
             } else {
-                //  addCurvedText.call(this);
                 addRadialText.call(this);
             }
         } catch (err) {

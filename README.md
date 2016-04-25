@@ -1,15 +1,16 @@
 <img src="https://raw.githubusercontent.com/lgrkvst/d3-sunburst-menu/master/img/observatory.jpg" width="400">
 
 # D3 Sunburst Menu
-A d3js multilevel circular (pie) menu, quite undocumented at the moment
+A d3js multilevel circular (pie) menu, quite undocumented at the moment. Here's a [demo](https://rawgit.com/lgrkvst/d3-sunburst-menu/master/demo/d3-sunburst-demo.html)
+
+Pie menus are _a graphical user interface for mouse gestures_. This particular implementation is traversed through nudging the edge and holding still (upon which the menu will traverse after a threshold of 0.3s).
 
 ## Description
 
-* Visualise a tree structure as a traversable, circular partition menu
-* Supports infinite tree levels
+* Visualise any tree structure as a traversable, circular partition menu
 * Traverse and select nodes by nudging the edge
-* Perform menu choices through callbacks
-* Automatic gradients and curved labels
+* Each leaf node should have a `function callback() {}`, invoked upon selection.
+* Automatic gradients and curved labels, although if a level contains more than 10 children, it's recommended to add `["text-align"] = "radiate"` to those children, causing the labels to emancipate from the center.
 
 sunburst_menu returns an object with a redraw function, so that the partition can be altered (in my case waiting for several REST services to return menu data) and then updated through a call to redraw().
 
