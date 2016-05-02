@@ -34,7 +34,7 @@
 
 <body>
     <div>
-    <a href="https://github.com/lgrkvst/d3-sunburst-menu"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+        <a href="https://github.com/lgrkvst/d3-sunburst-menu"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
         <script type="text/javascript" charset="utf-8">
         var w = window.innerWidth,
             h = window.innerHeight;
@@ -50,27 +50,47 @@
         <script src="https://rawgit.com/lgrkvst/d3-sunburst-menu/master/src/d3-sunburst-menu.js" type="text/javascript" charset="utf-8"></script>
         <script>
         function default_callback() {
-            alert(this.id);
+            console.log(this.id);
         }
 
+        // Every item must have an id
         var tree = {
             _children: [{
                 id: "ajax call",
-                fill: "#d90"
+                name: "ajax call name",
+                fill: "#d90",
+                _children: new Promise(function(resolve, reject) {
+                    window.setTimeout(function() {
+                        resolve([{
+                            id: "item 1",
+                            callback: default_callback
+                        }, {
+                            id: "item 2",
+                            callback: default_callback
+                        }, {
+                            id: "item 3",
+                            callback: default_callback
+                        }]);
+                    }, 1500);
+                })
             }, {
                 id: "whatever",
                 fill: "#8a0",
                 name: "a label",
-                _children: [{
-                    id: "item 1",
-                    callback: default_callback
-                }, {
-                    id: "item 2",
-                    callback: default_callback
-                }, {
-                    id: "item 3",
-                    callback: default_callback
-                }]
+                _children: new Promise(function(resolve, reject) {
+                    window.setTimeout(function() {
+                        resolve([{
+                            id: "ka-ching 1",
+                            callback: default_callback
+                        }, {
+                            id: "ka-ching 2",
+                            callback: default_callback
+                        }, {
+                            id: "ka-ching 3",
+                            callback: default_callback
+                        }]);
+                    }, 2100);
+                })
             }, {
                 id: "three",
                 fill: "#39d",
@@ -100,42 +120,12 @@
             }, ]
         };
 
-
         var d3_sunburst_menu = module.exports(tree, {
             x: w / 2,
             y: h / 2
         }, svg);
-
-        setTimeout(simulated_restreturn, 2000);
-
-        function simulated_restreturn() {
-            tree._children[2]._children = [];
-            tree._children[2]._children.push({
-                id: "a",
-                name: "rest result 1"
-            });
-            tree._children[2]._children.push({
-                id: "b",
-                name: "rest result 2",
-                _children: [{
-                    id: "only child",
-                    callback: default_callback
-                }]
-            });
-            tree._children[2]._children.push({
-                id: "c",
-                name: "rest result 3",
-                _children: [{
-                    id: "sibling 1",
-                    callback: default_callback
-                }, {
-                    id: "sibling 2",
-                    callback: default_callback
-                }]
-            });
-            d3_sunburst_menu.redraw();
-        }
         </script>
     </div>
 </body>
+
 </html>

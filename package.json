@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/lgrkvst/d3-sunburst-menu/issues"
   },
-  "homepage": "https://github.com/lgrkvst/d3-sunburst-menu#readme"
+  "homepage": "https://github.com/lgrkvst/d3-sunburst-menu#readme",
+  "dependencies": {
+    "d3": "*"
+  }
 }
