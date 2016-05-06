@@ -103,6 +103,9 @@ module.exports = (function d3_sunburst_menu(tree, n, container) {
 
 
     var partition = d3.layout.partition()
+        .sort(function(a, b) {
+            return d3.ascending(a.name, b.name);
+        })
         .size([2 * Math.PI, radius])
         .value(function(d) {
             return d.depth;

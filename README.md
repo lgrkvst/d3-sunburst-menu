@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/lgrkvst/d3-sunburst-menu/master/img/observatory.jpg" width="400">
 
-##Release 1.0.7
+##Release 1.0.8
 * Added support for then-able promises (see [demo](https://rawgit.com/lgrkvst/d3-sunburst-menu/master/demo/d3-sunburst-demo.html))
 if `_children` is a promise, d3-sunburst-menu will add a loading indicator until the promise is resolved.
 

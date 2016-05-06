@@ -48,6 +48,8 @@
         var module = {};
         </script>
         <script src="https://rawgit.com/lgrkvst/d3-sunburst-menu/master/src/d3-sunburst-menu.js" type="text/javascript" charset="utf-8"></script>
+
+<!--        <script src="../src/d3-sunburst-menu.js" type="text/javascript" charset="utf-8"></script>  -->
         <script>
         function default_callback() {
             console.log(this.id);
@@ -57,39 +59,39 @@
         var tree = {
             _children: [{
                 id: "ajax call",
-                name: "ajax call name",
+                name: "Loading REST...",
                 fill: "#d90",
                 _children: new Promise(function(resolve, reject) {
                     window.setTimeout(function() {
                         resolve([{
-                            id: "item 1",
+                            id: "add 1",
                             callback: default_callback
                         }, {
-                            id: "item 2",
+                            id: "add 2",
                             callback: default_callback
                         }, {
-                            id: "item 3",
+                            id: "add 3",
                             callback: default_callback
                         }]);
-                    }, 1500);
+                    }, 4000);
                 })
             }, {
                 id: "whatever",
                 fill: "#8a0",
-                name: "a label",
+                name: "Force Network",
                 _children: new Promise(function(resolve, reject) {
                     window.setTimeout(function() {
                         resolve([{
-                            id: "ka-ching 1",
+                            id: "freeze",
                             callback: default_callback
                         }, {
-                            id: "ka-ching 2",
+                            id: "remove",
                             callback: default_callback
                         }, {
-                            id: "ka-ching 3",
+                            id: "explode",
                             callback: default_callback
                         }]);
-                    }, 2100);
+                    }, 500);
                 })
             }, {
                 id: "three",
