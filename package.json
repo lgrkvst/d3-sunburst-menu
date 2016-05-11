@@ -1,6 +1,6 @@
 {
   "name": "d3-sunburst-menu",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A d3js multilevel circular (pie) menu",
   "main": "src/sunburst_menu.js",
   "scripts": {
@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/lgrkvst/d3-sunburst-menu#readme",
   "dependencies": {
-    "d3": ">=3."
+    "d3": "^3.5.17"
   }
 }
