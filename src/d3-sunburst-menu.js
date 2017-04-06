@@ -25,10 +25,8 @@
  */
 
 module.exports = (function d3_sunburst_menu(tree, n, container) {
-    var _radius = 140;
-    var radius = 140;
-    var _rotate = Math.PI / 2;
-    var rotate = _rotate;
+    var radius = _radius = 140;
+    var rotate = _rotate = Math.PI / 2;
     var hue = d3.scale.category10(); // if node parents don't specify a fill attribute (i.e. a color)
     var backSize = 0.1; // back button size as percent of full circle
     var currentNode = tree; // start traversal at root level
@@ -185,7 +183,7 @@ module.exports = (function d3_sunburst_menu(tree, n, container) {
         var r = arc.outerRadius()(tree) - offset;
         var m = d3.mouse(this);
         // get menu position – todo: compile the regexp for performance...
-        var s = radialmenu.attr("transform").match(/translate\(([\d\.]+),([\d\.]+)/).filter(function(a, b) {
+        var s = radialmenu.attr("transform").match(/translate\(([\d\.]+)[\s,]([\d\.]+)/).filter(function(a, b) {
             return b ? a : false;
         });
         if (((m[0] - s[0]) * (m[0] - s[0]) + (m[1] - s[1]) * (m[1] - s[1])) > r * r) {
@@ -539,6 +537,7 @@ module.exports = (function d3_sunburst_menu(tree, n, container) {
             })
             .attr("offset", "100%")
             .attr("stop-opacity", "100%");
+
 
         d3.select(this).style("fill", prefix_id("url('#gradient_"));
 
