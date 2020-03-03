@@ -1,5 +1,10 @@
 <img src="https://raw.githubusercontent.com/lgrkvst/d3-sunburst-menu/master/img/observatory.jpg" width="400">
 
+## Release 1.0.11 (3 March 2020)
+* Added settings for `maxRadius` and `nudgeTolerance`
+* Replaced parameter n ({x,y}) with mousept ([x,y]) as returned by `d3.mouse()`.
+* The callback called by invoked menu items now obtains the selected node as parameter
+
 ## Release 1.0.10
 * IE11 compatibility: graceful menu coloring if no svg gradients support
 * IE11 compatilibity: fixed regexp to recognise space as transform parameter delimiter (along with comma)
@@ -44,8 +49,8 @@ Don't like front tooling like webpack?
 ###Arguments:
 
 * _tree_ is a d3 partition tree with a BIG NOTE: "children" arrays must be named "_children" (with a preceding underscore). This in order to allow for a menu instance to be redrawn with new nodes. (Fixable, although not my top priority.)
-* _node_ is any object with x and y properties (for instance a d3 force directed node instance). d3-sunburst-menu only uses the x and y attributes to position the menu inside the...
-* _svg_container_ is the d3 selection that will host the menu (as obtained by `d3.select`).
+* _mousept_ is an array of (svg) coordinates (as obtained by `d3.mouse()`) saying where to position the center of the menu.
+* _svg_container_ is the d3 selection that will host the menu (as obtained by `d3.select`). Typically your main svg app element.
 
 Redraw by:
 `treecontroller.redraw();`
@@ -56,17 +61,23 @@ Remove by:
 ##Settings
 The first few lines of d3-sunburst-menu.js offers a number of settings:
 
-    var _radius = 140; // size of menu
-    var _rotate = Math.PI / 2; // default menu rotation (if you need to align menu items)
+    var radius = _radius = 140;
+    var hue = d3.scale.category10(); // if node parents don't specify a fill attribute (i.e. a color)
     var backSize = 0.1; // back button size as percent of full circle
-    var idleTime = 300; // time (ms) between edge nudge and menu traversal
-    var dropshadow = false; // add a nice dropshadow – sort of kills menu performance, but can be optimized
+    var currentArc, currentNode = tree; // start traversal at root level
+    var idleTime = 300; // time (ms) between edge nudge and traversal
+    var padAngle = 0.01;
+    var dropshadow = false; // true = performance killer
+    var cornerRadius = 4; // 4 is neat but causes transition flickering if root has exactly two children
+    var loaderDuration = 4000; // duration of loading arcs in ms
+    var menu_level_scope = 2; // number of menu levels to visualise together
+    var maxRadius = 190; // max size of menu
+    var nudgeTolerance = 4000; // how deep into the menu item the mouse needs to travel before traversal/selection takes place
 
 
 
     @author Christian Lagerkvist [@lgrkvst, git@o-o.se]
     todo:
-     Documentation
      Add icon support
      Fix leaf text styles (curved text demands some restrictions... There is a radiating text style in the source code, although somewhat neglected lately)
      Move svg attributes to css
