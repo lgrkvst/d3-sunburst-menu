@@ -1,11 +1,11 @@
 {
   "name": "d3-sunburst-menu",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A d3js multilevel circular (pie) menu",
   "main": "src/sunburst_menu.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "preversion": "webpack --entry ./src/d3-sunburst-menu.js --output-filename dist/d3-sunburst-menu.min.js --optimize-minimize"
+    "preversion": "webpack --entry ./src/d3-sunburst-menu.js --output-filename d3-sunburst-menu.min.js --optimize-minimize"
   },
   "repository": {
     "type": "git",

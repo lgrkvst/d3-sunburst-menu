@@ -14,21 +14,46 @@
     }
 
     body {
-        background-color: #000000;
+        background-color: #222;
         background-image: url('http://hybridtechcar.com/wp-content/uploads/2013/12/national-geographic-14.jpg');
-        background-position: top center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
+  /* Full height */
+  height: 100%;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+    }
+
+    a {
+        color:#ff7600;
     }
 
     .mouseover {
         opacity: 0.5;
     }
 
-    body > svg > text {
-        font-size: 60px;
-        fill: #fff;
-        font-family: 'stint ultra condensed', tahoma, sans-serif;
+    code {
+        background-color: #eee;
+        color:#000;
+    }
+
+    .content > ul > i {
+        font-size:0.8em;
+    }
+
+    h1 {
+        font-weight: 200;
+        letter-spacing: -0.03em;
+    }
+    .content {
+        color: #fff;
+        font-family: sans-serif;
+        font-weight: 200;
+        background: #222;
+        font-size:0.95em;
+        padding: 20px;
+        border: 1px dashed white;
     }
 
     .menuitem {
@@ -42,38 +67,86 @@
     .curved, .radial {
         fill: #fff;
     }
-
+svg text {
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+svg text::selection {
+    background: none;
+}
     </style>
 </head>
 
 <body>
     <div>
         <a href="https://github.com/lgrkvst/d3-sunburst-menu"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+        <svg id="svgapp">
+            <foreignObject x="40" y="50" width="400" height="900">
+    <!--
+      In the context of SVG embedded in an HTML document, the XHTML
+      namespace could be omitted, but it is mandatory in the
+      context of an SVG document
+    -->
+    <div class="content" xmlns="http://www.w3.org/1999/xhtml">
+    <h1>Context pie menu for SVG desktop apps</h1>
+    <h3>Instructions</h3>
+    <p><strong>Hold down the mouse button</strong> and nudge the perimeter to traverse/select. Once you've traversed, select the black bar to navigate backwards in the hierarchy.</p>
+    <p>
+        Implemented correctly, a pie menu becomes a <i>gui for gestures</i>. This implementation, d3-sunburst-menu, moves the menu along the mouse cursor's "edge normal vector", allowing for speedy spatial navigation.
+    </p>
+    <p>
+        The primary use-case is as a context menu for data exploration, especially force networks.
+    </p>
+    <h3>Installation</h3>
+    <p>
+      <code>npm install d3-sunburst-menu</code><br>
+      Normally you'd attach a <strong>right-click</strong> to:
+    </p>
+    <pre>d3_sunburst_menu(tree, mousept, container);</pre>
+    <p>where
+        <ul>
+            <li><code>tree</code> <i>is a nested json of menu items (line 115 in this example)</i></li>
+            <li><code>mousept</code> <i>is the [x,y] position of the meny (as obtained by <code>d3.mouse(this);</code></i></li>
+            <li><code>container</code> <i>is the root svg object
+            </i></li>
+            </ul>
+    </p>
+    <p>
+        Selecting a tree leaf invokes a callback: <code>console.log(this.id);</code> in this case.
+    </p>
+    <p>Normally, you would perform some action and close the menu.</p>
+    </p>
+    <p>Have fun, experiment and report any <a href="https://github.com/lgrkvst/d3-sunburst-menu/issues">issues</a>.<br><br><a href="mailto:d3-sunburst-menu@o-o.se">Christian Lagerkvist</a>, 2020</p>
+    </div>
+  </foreignObject>
+        </svg>
         <script type="text/javascript" charset="utf-8">
         var w = window.innerWidth,
             h = window.innerHeight;
 
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select("#svgapp")
             .attr("width", w)
-            .attr("height", h);
-
-        svg.append("text").attr("x", "20").attr("y", "40").text("nudge menu edge to traverse/select...");
+            .attr("height", h<1000 ? 1000 : h);
 
         var module = {};
         </script>
-        <script src="https://rawgit.com/lgrkvst/d3-sunburst-menu/master/src/d3-sunburst-menu.js" type="text/javascript" charset="utf-8"></script>
-
-<!--        <script src="../src/d3-sunburst-menu.js" type="text/javascript" charset="utf-8"></script>  -->
+<!--         <script src="https://rawgit.com/lgrkvst/d3-sunburst-menu/master/src/d3-sunburst-menu.js" type="text/javascript" charset="utf-8"></script>
+ -->
+        <script src="../src/d3-sunburst-menu.js" type="text/javascript" charset="utf-8"></script>
         <script>
-        function default_callback() {
+        function default_callback(node) {
             console.log(this.id);
+            d3_sunburst_menu.remove();
+            d3_sunburst_menu = null;
         }
 
         // Every item must have an id
         var tree = {
             _children: [{
                 id: "ajax call",
-                name: "Loading REST...",
+                name: "API call",
                 fill: "#d90",
                 _children: new Promise(function(resolve, reject) {
                     window.setTimeout(function() {
@@ -93,9 +166,7 @@
                 id: "whatever",
                 fill: "#8a0",
                 name: "Force Network",
-                _children: new Promise(function(resolve, reject) {
-                    window.setTimeout(function() {
-                        resolve([{
+                _children: [{
                             id: "freeze",
                             callback: default_callback
                         }, {
@@ -104,9 +175,7 @@
                         }, {
                             id: "explode",
                             callback: default_callback
-                        }]);
-                    }, 500);
-                })
+                        }]
             }, {
                 id: "three",
                 fill: "#39d",
@@ -136,10 +205,19 @@
             }, ]
         };
 
-        var d3_sunburst_menu = module.exports(tree, {
-            x: w / 2,
-            y: h / 2
-        }, svg);
+        var d3_sunburst_menu;
+
+        d3.select("#svgapp").on("mousedown", function() {
+            if (!d3_sunburst_menu) {
+                d3_sunburst_menu = module.exports(tree, d3.mouse(this), svg);
+            }
+        });
+        d3.select("#svgapp").on("mouseup", function() {
+            if (d3_sunburst_menu) {
+                d3_sunburst_menu.remove();
+                d3_sunburst_menu = null;
+            }
+        });
         </script>
     </div>
 </body>

@@ -7,36 +7,41 @@
  *
  * @author Christian Lagerkvist [@lgrkvst, git@o-o.se]
  * todo:
- *      Documentation
  *      Fix leaf text styles
  *      Move svg attributes to css
  *      Add tests
  *      Refactoring?
  *
- * Time to spare? Try generating a sunburst menu in grayscale - really neat
+ * Time to spare? Try generating a menu in grayscale - looks really neat
+ *
+ * Christian Lagerkvist, 2020
  */
 
 /**
-    sunburst_menu(tree, n, container)
+    sunburst_menu(tree, mousept, container)
 
     tree is fed into the d3.partition object - every leaf in the tree must have a callback function, invoked upon selection
-    n is the object invoking the menu – just make sure it has x any y attributes
+    n is usually the current mouse position, around which then menu will be drawn
     container is a d3 svg node that should host the menu
  */
 
-module.exports = (function d3_sunburst_menu(tree, n, container) {
+module.exports = (function d3_sunburst_menu(tree, mousept, container) {
+    // get location of invokation
+
     var radius = _radius = 140;
     var rotate = _rotate = Math.PI / 2;
     var hue = d3.scale.category10(); // if node parents don't specify a fill attribute (i.e. a color)
     var backSize = 0.1; // back button size as percent of full circle
-    var currentNode = tree; // start traversal at root level
+    var currentArc, currentNode = tree; // start traversal at root level
     var menuWaiter;
     var idleTime = 300; // time (ms) between edge nudge and traversal
     var padAngle = 0.01;
-    var dropshadow = false;
+    var dropshadow = false; // true = performance killer
     var cornerRadius = 4; // 4 is neat but causes transition flickering if root has exactly two children
     var loaderDuration = 4000; // duration of loading arcs in ms
     var menu_level_scope = 2; // number of menu levels to visualise together
+    var maxRadius = 190;
+    var nudgeTolerance = 4000;
 
     // currying arcradius for maintaining nice ratio between inner and outer ring (menu depth) edge
     // inner_outer is either 0 (inner ring edge) or 1 (outer ring edge)
@@ -146,7 +151,7 @@ module.exports = (function d3_sunburst_menu(tree, n, container) {
         .nodes(tree);
 
     // we're only using n(ode) to set initial menu position
-    var radialmenu = container.append("g").attr("id", "radialmenu").attr("transform", "translate(" + n.x + "," + n.y + ")");
+    var radialmenu = container.append("g").attr("id", "radialmenu").attr("transform", "translate(" + mousept[0] + "," + mousept[1] + ")");
 
     // define a dropshadow
     var filter = container.append("defs").append("filter")
@@ -186,7 +191,7 @@ module.exports = (function d3_sunburst_menu(tree, n, container) {
         var s = radialmenu.attr("transform").match(/translate\(([\d\.]+)[\s,]([\d\.]+)/).filter(function(a, b) {
             return b ? a : false;
         });
-        if (((m[0] - s[0]) * (m[0] - s[0]) + (m[1] - s[1]) * (m[1] - s[1])) > r * r) {
+        if (((m[0] - s[0]) * (m[0] - s[0]) + (m[1] - s[1]) * (m[1] - s[1])) > (r * r) + nudgeTolerance) {
             var A = Math.atan2((m[1] - s[1]), (m[0] - s[0]));
             radialmenu.attr("transform", "translate(" + Math.round(1 * m[0] - Math.cos(A) * r) + "," + Math.round(1 * m[1] - Math.sin(A) * r) + ")")
             clearTimeout(menuWaiter);
@@ -220,7 +225,7 @@ module.exports = (function d3_sunburst_menu(tree, n, container) {
         }
 
         if (p.callback) { // menu selections (normally leaves) – execute menu item's callback with menu invoking node as argument
-            p.callback(n);
+            p.callback(currentArc);
             return;
         }
 
@@ -238,7 +243,7 @@ module.exports = (function d3_sunburst_menu(tree, n, container) {
 
         // ...although don't make it too big
         if (radius > 190) {
-            radius = 190;
+            radius = maxRadius;
         }
 
         if (radius < _radius) {
