@@ -300,16 +300,15 @@ module.exports = (function d3_sunburst_menu(tree, mousept, container) {
             .each(addText)
             .each(addClipPath) /* Prevent large labels to travel outside arc */
             .filter(children_pending) /* Filter loaders on _children-promises */
-            .style("fill-opacity", 0.3) /* Fade down original arc... */
             .each(addLoaders); /* ...and overlay it with a load bar */
 
         // hide current root
         group.selectAll("path")
-            .filter(function(n)  { /* bug fix from .filter(!children_pending) which returns unexpected results(?) */
+            .filter(function(n) { /* bug fix from .filter(!children_pending) which returns unexpected results(?) */
                 return !children_pending(n);
             })
-            .style("fill-opacity", function(b) {
-                return b.depth ? 1 : 0;
+            .style("visibility", function(b) {
+                return b.depth ? "visible" : "hidden";
             })
 
         group.transition()
@@ -386,6 +385,7 @@ module.exports = (function d3_sunburst_menu(tree, mousept, container) {
                 this.setAttribute("class", "menuitem mouseover");
             })
             .on("mouseout", function(n) {
+                // might be a bug lurking here if menu items lose their specific item class...
                 this.setAttribute("class", "menuitem");
             });
 
@@ -498,7 +498,7 @@ module.exports = (function d3_sunburst_menu(tree, mousept, container) {
 
         d3.select(this.parentNode)
             .append("text")
-            .attr("clip-path", prefix_id("url(#clipPath_") + ")")
+            .attr("clip-path", prefix_id("url(#clipPath_"))
             .attr("class", "nodelabeltext")
             .attr("class", "curved")
             .attr("pointer-events", "none")
