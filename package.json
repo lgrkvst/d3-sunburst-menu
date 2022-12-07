@@ -5,7 +5,7 @@
   "main": "src/sunburst_menu.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "preversion": "webpack --entry ./src/d3-sunburst-menu.js --output-filename d3-sunburst-menu.min.js --optimize-minimize"
+    "preversion": "node node_modules/uglify-js/bin/uglifyjs src/d3-sunburst-menu.js > dist/d3-sunburst-menu.min.js"
   },
   "repository": {
     "type": "git",
@@ -27,5 +27,9 @@
   "homepage": "https://github.com/lgrkvst/d3-sunburst-menu#readme",
   "dependencies": {
     "d3": "^3.5.17"
+  },
+  "devDependencies": {
+    "uglify-js": "^3.17.4",
+    "webpack-cli": "^5.0.1"
   }
 }

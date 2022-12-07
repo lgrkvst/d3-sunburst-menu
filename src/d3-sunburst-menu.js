@@ -292,7 +292,7 @@ module.exports = (function d3_sunburst_menu(tree, mousept, container) {
 
         group.exit().remove();
         group.enter().append("g")
-            .attr("class", "menuitem")
+            .attr("class", (item) => "menuitem " + "menuitem_"+item.id)
             .append("path")
             .attr("class", "menuitem")
             .attr("id", prefix_id("path_"))
@@ -498,7 +498,7 @@ module.exports = (function d3_sunburst_menu(tree, mousept, container) {
 
         d3.select(this.parentNode)
             .append("text")
-            .attr("clip-path", prefix_id("url(#clipPath_"))
+            .attr("clip-path", prefix_id("url(#clipPath_") + ")")
             .attr("class", "nodelabeltext")
             .attr("class", "curved")
             .attr("pointer-events", "none")
