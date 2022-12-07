@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/lgrkvst/d3-sunburst-menu/master/img/observatory.jpg" width="400">
 
-## Release 1.0.12
+## Release 1.1.0
 
 - Added css class for label selection
 - Fixed a class name bug
