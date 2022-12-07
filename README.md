@@ -1,5 +1,9 @@
 <img src="https://raw.githubusercontent.com/lgrkvst/d3-sunburst-menu/master/img/observatory.jpg" width="400">
 
+## Release 1.2.0 (7 Dec 2022)
+
+- Fixed browser not replicating fill-opacity on inherited url(#...) references
+
 ## Release 1.1.0 (7 Dec 2022)
 
 - Added css class for label selection
