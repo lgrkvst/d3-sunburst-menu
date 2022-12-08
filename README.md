@@ -1,5 +1,9 @@
 <img src="https://raw.githubusercontent.com/lgrkvst/d3-sunburst-menu/master/img/observatory.jpg" width="400">
 
+## Release 1.3.0 (8 Dec 2022)
+
+- Reverted to invoking menu by passing (a clicked) node. More handy in IRL situations where you might want to reference the invoker in the menu item's callback.
+
 ## Release 1.2.0 (7 Dec 2022)
 
 - Fixed browser not replicating fill-opacity on inherited url(#...) references
