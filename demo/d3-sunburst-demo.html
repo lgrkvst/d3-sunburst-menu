@@ -16,13 +16,13 @@
     body {
         background-color: #222;
         background-image: url('http://hybridtechcar.com/wp-content/uploads/2013/12/national-geographic-14.jpg');
-  /* Full height */
-  height: 100%;
+        /* Full height */
+        height: 100%;
 
-  /* Center and scale the image nicely */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+        /* Center and scale the image nicely */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
     }
 
     a {
@@ -104,11 +104,11 @@ svg text::selection {
       <code>npm install d3-sunburst-menu</code><br>
       Normally you'd attach a <strong>right-click</strong> to:
     </p>
-    <pre>d3_sunburst_menu(tree, mousept, container);</pre>
+    <pre>d3_sunburst_menu(tree, node, container);</pre>
     <p>where
         <ul>
             <li><code>tree</code> <i>is a nested json of menu items (line 115 in this example)</i></li>
-            <li><code>mousept</code> <i>is the [x,y] position of the meny (as obtained by <code>d3.mouse(this);</code></i></li>
+            <li><code>node</code> <i>is the right-clicked (force-directed) node. Must contain [x,y] attributes</li>
             <li><code>container</code> <i>is the root svg object
             </i></li>
             </ul>
@@ -118,7 +118,7 @@ svg text::selection {
     </p>
     <p>Normally, you would perform some action and close the menu.</p>
     </p>
-    <p>Have fun, experiment and report any <a href="https://github.com/lgrkvst/d3-sunburst-menu/issues">issues</a>.<br><br><a href="mailto:d3-sunburst-menu@o-o.se">Christian Lagerkvist</a>, 2020</p>
+    <p>Have fun, experiment and report any <a href="https://github.com/lgrkvst/d3-sunburst-menu/issues">issues</a>.<br><br><a href="mailto:d3-sunburst-menu@o-o.se">Christian Lagerkvist</a>, 2022</p>
     </div>
   </foreignObject>
         </svg>
@@ -209,7 +209,7 @@ svg text::selection {
 
         d3.select("#svgapp").on("mousedown", function() {
             if (!d3_sunburst_menu) {
-                d3_sunburst_menu = module.exports(tree, d3.mouse(this), svg);
+                d3_sunburst_menu = module.exports(tree, {x:d3.mouse(this)[0],y:d3.mouse(this)[1]} , svg);
             }
         });
         d3.select("#svgapp").on("mouseup", function() {

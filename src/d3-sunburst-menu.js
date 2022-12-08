@@ -18,14 +18,14 @@
  */
 
 /**
-    sunburst_menu(tree, mousept, container)
+    sunburst_menu(tree, node, container)
 
-    tree is fed into the d3.partition object - every leaf in the tree must have a callback function, invoked upon selection
-    n is usually the current mouse position, around which then menu will be drawn
-    container is a d3 svg node that should host the menu
+    _tree_ is fed into the d3.partition object - every leaf in the tree must have a callback function, invoked upon selection
+    _node_ is the clicked object invoking the menu, around which then menu will be drawn. (E.g. a node in a force-directed network.) Must contain x and y attributes.
+    _container_ is a d3 selection that should host the menu (e.g. d3.select("svg#app"))
  */
 
-module.exports = (function d3_sunburst_menu(tree, mousept, container) {
+module.exports = (function d3_sunburst_menu(tree, node, container) {
     // get location of invokation
 
     var radius = _radius = 140;
@@ -151,7 +151,7 @@ module.exports = (function d3_sunburst_menu(tree, mousept, container) {
         .nodes(tree);
 
     // we're only using n(ode) to set initial menu position
-    var radialmenu = container.append("g").attr("id", "radialmenu").attr("transform", "translate(" + mousept[0] + "," + mousept[1] + ")");
+    var radialmenu = container.append("g").attr("id", "radialmenu").attr("transform", "translate(" + node.x + "," + node.y + ")");
 
     // define a dropshadow
     var filter = container.append("defs").append("filter")
@@ -225,7 +225,7 @@ module.exports = (function d3_sunburst_menu(tree, mousept, container) {
         }
 
         if (p.callback) { // menu selections (normally leaves) – execute menu item's callback with menu invoking node as argument
-            p.callback(currentArc);
+            p.callback(node);
             return;
         }
 
